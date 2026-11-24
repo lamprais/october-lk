@@ -1,0 +1,141 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MagneticCursor from '../components/MagneticCursor.tsx';
+import InquiryDrawer from '../components/InquiryDrawer.tsx';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogTitle?: string;
+  ogImage?: string;
+  ogType?: string;
+  canonicalPath?: string;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title = 'October Digital Agency – Digital Design & Technical Services',
+  description = 'October Digital Agency — Website Development, SEO Services, Ecommerce & Brand Design in Sri Lanka.',
+  ogTitle = title,
+  ogImage = 'https://october.lk/images/October-Logo-Light-PNG.png',
+  ogType = 'website',
+  canonicalPath = Astro.url.pathname,
+  schema,
+} = Astro.props;
+
+const canonicalUrl = new URL(canonicalPath, 'https://october.lk').toString();
+const resolvedOgImage = ogImage.startsWith('http')
+  ? ogImage
+  : new URL(ogImage, 'https://october.lk').toString();
+
+const gaId = import.meta.env.PUBLIC_GA_ID || 'UA-163807060-1';
+const googleVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION || '';
+
+const baseOrganizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'October Digital Agency',
+  url: 'https://october.lk',
+  logo: 'https://october.lk/images/October-Logo-Light-PNG.png',
+  email: 'info@october.lk',
+  telephone: '+94778892555',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Colombo',
+    addressCountry: 'LK',
+  },
+  sameAs: ['https://www.instagram.com/october.lk/'],
+};
+
+const jsonLdPayload = schema
+  ? Array.isArray(schema)
+    ? [baseOrganizationSchema, ...schema]
+    : [baseOrganizationSchema, schema]
+  : baseOrganizationSchema;
+---
+
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="max-image-preview:large" />
+    {googleVerification && (
+      <meta name="google-site-verification" content={googleVerification} />
+    )}
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/png" href="/images/cropped-October_Favicon_11.4.20.png" />
+
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={resolvedOgImage} />
+    <meta
+      property="og:site_name"
+      content="October Digital Agency"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={resolvedOgImage} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdPayload)} />
+
+    {/* Google Analytics carried over from WordPress (UA-163807060-1 / PUBLIC_GA_ID) */}
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+    <script is:inline define:vars={{ gaId }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', gaId);
+    </script>
+
+    <ClientRouter />
+  </head>
+  <body class="relative min-h-screen bg-[#0A0A0B] font-sans text-[#F5F5F3] antialiased selection:bg-[#F5F5F3] selection:text-[#0A0A0B]">
+    <div class="ambient-spotlight pointer-events-none fixed inset-0 z-0" aria-hidden="true"></div>
+    <div class="relative z-10 flex min-h-screen flex-col">
+      <Header />
+      <div class="flex-1">
+        <slot />
+      </div>
+      <Footer />
+    </div>
+
+    <MagneticCursor client:idle />
+    <InquiryDrawer client:idle />
+
+    <script>
+      import '../scripts/animations.ts';
+
+      function bindInquiryTriggers() {
+        document.querySelectorAll('[data-open-inquiry]').forEach((btn) => {
+          if (btn.getAttribute('data-bound') === 'true') return;
+          btn.setAttribute('data-bound', 'true');
+          btn.addEventListener('click', () => {
+            window.dispatchEvent(new CustomEvent('open-inquiry-drawer'));
+          });
+        });
+      }
+
+      document.addEventListener('astro:page-load', bindInquiryTriggers);
+    </script>
+  </body>
+</html>

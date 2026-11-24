@@ -1,0 +1,53 @@
+---
+const pathname = Astro.url.pathname;
+const isServices = pathname.startsWith('/services');
+const isWork = pathname.startsWith('/work');
+---
+
+<header class="sticky top-0 z-50 border-b border-white/10 bg-[#0A0A0B]/85 backdrop-blur-md">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+    <a href="/" class="flex items-center gap-3" aria-label="October Digital Agency Home">
+      <img
+        src="/images/October_Logo_Light_04.04.20.svg"
+        alt="October Digital Agency"
+        class="h-6 w-auto"
+      />
+    </a>
+
+    <nav aria-label="Primary" class="flex items-center gap-6 sm:gap-8">
+      <a
+        href="/services/"
+        class={`text-[11px] font-medium tracking-[0.18em] uppercase transition ${
+          isServices ? 'text-white underline underline-offset-8' : 'text-neutral-400 hover:text-white'
+        }`}
+      >
+        Services
+      </a>
+      <a
+        href="/work/"
+        class={`text-[11px] font-medium tracking-[0.18em] uppercase transition ${
+          isWork ? 'text-white underline underline-offset-8' : 'text-neutral-400 hover:text-white'
+        }`}
+      >
+        Work
+      </a>
+      <button
+        type="button"
+        data-open-inquiry
+        class="border border-white/20 px-3.5 py-1.5 text-[11px] font-medium tracking-[0.18em] text-[#F5F5F3] uppercase transition hover:border-white hover:bg-[#F5F5F3] hover:text-[#0A0A0B]"
+      >
+        Contact
+      </button>
+    </nav>
+
+    <div class="hidden items-center gap-5 text-[11px] tracking-[0.12em] text-neutral-400 lg:flex">
+      <a href="mailto:info@october.lk" class="transition hover:text-white">
+        info@october.lk
+      </a>
+      <span class="text-white/20">/</span>
+      <a href="tel:+94778892555" class="transition hover:text-white">
+        +94 77 889 2555
+      </a>
+    </div>
+  </div>
+</header>

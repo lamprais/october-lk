@@ -1,0 +1,241 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+  return entries.map((entry, idx) => ({
+    params: { slug: entry.data.slug },
+    props: {
+      entry,
+      nextEntry: entries[(idx + 1) % entries.length],
+    },
+  }));
+}
+
+const { entry, nextEntry } = Astro.props;
+const { Content } = await render(entry);
+const {
+  title,
+  slug,
+  subtitle,
+  location,
+  category,
+  year,
+  summary,
+  services,
+  techStack,
+  accentColor,
+  thumbnail,
+  reel,
+  logo,
+  liveUrl,
+  metrics,
+} = entry.data;
+---
+
+<Layout
+  title={`${title} – Case Study – October Digital Agency`}
+  description={summary}
+  ogTitle={`${title} – ${subtitle} | October Digital Agency`}
+  ogImage={thumbnail || '/images/October-Logo-Light-PNG.png'}
+  ogType="article"
+  canonicalPath={`/work/${slug}/`}
+  schema={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CreativeWork',
+      name: title,
+      headline: subtitle,
+      description: summary,
+      url: `https://october.lk/work/${slug}/`,
+      image: thumbnail ? `https://october.lk${thumbnail}` : undefined,
+      creator: {
+        '@type': 'ProfessionalService',
+        name: 'October Digital Agency',
+        url: 'https://october.lk',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://october.lk/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Work',
+          item: 'https://october.lk/work/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: title,
+          item: `https://october.lk/work/${slug}/`,
+        },
+      ],
+    },
+  ]}
+>
+  <main
+    class="mx-auto max-w-7xl px-6 py-16 sm:py-24"
+    style={`--ambient-accent: ${accentColor};`}
+  >
+    <!-- Breadcrumb -->
+    <div class="mb-10 flex items-center justify-between text-[11px] tracking-[0.18em] text-neutral-400 uppercase">
+      <a href="/work/" class="transition hover:text-white">← All Work</a>
+      <span>{category} · {year}</span>
+    </div>
+
+    <!-- Header -->
+    <div class="grid grid-cols-1 gap-10 border-b border-white/10 pb-14 lg:grid-cols-12">
+      <div class="lg:col-span-8">
+        <p class="text-xs font-medium tracking-[0.18em] text-neutral-400 uppercase">
+          {location}
+        </p>
+        <h1
+          class="mt-3 text-4xl font-bold tracking-tight text-[#F5F5F3] sm:text-6xl lg:text-7xl"
+          style={`view-transition-name: project-title-${slug};`}
+        >
+          {title}
+        </h1>
+        <p class="mt-4 text-xl text-neutral-300">{subtitle}</p>
+      </div>
+
+      <div class="flex flex-col justify-between gap-6 lg:col-span-4">
+        <p class="text-sm leading-relaxed text-neutral-400">{summary}</p>
+        <div class="flex flex-wrap gap-2">
+          {techStack.map((tag) => (
+            <span class="border border-white/15 px-3 py-1 text-[10px] font-medium tracking-[0.14em] text-neutral-200 uppercase">
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Case Study Visual Showcase -->
+    <div class="my-14 border border-white/10 bg-[#101012]">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-5 py-3.5">
+        <div class="flex items-center gap-2 text-[11px] tracking-[0.16em] text-neutral-400 uppercase">
+          <span
+            class="inline-block h-2 w-2 rounded-full"
+            style={`background-color: ${accentColor};`}
+          />
+          <span>{reel ? 'Project Reel' : 'Project Showcase'}</span>
+        </div>
+
+        {liveUrl && (
+          <a
+            href={liveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor-label="Live Site"
+            class="border border-white/20 px-3 py-1 text-[10px] font-semibold tracking-[0.15em] text-white uppercase transition hover:bg-white hover:text-black"
+          >
+            Visit Live ↗
+          </a>
+        )}
+      </div>
+
+      <div class="p-4 sm:p-6">
+        <div
+          class="relative aspect-[16/9] w-full overflow-hidden border border-white/10 bg-[#0A0A0B]"
+          style={`background: radial-gradient(circle at 50% 25%, ${accentColor}26, #0A0A0B 75%);`}
+        >
+          {reel ? (
+            <video
+              src={reel}
+              autoplay
+              muted
+              loop
+              playsinline
+              class="h-full w-full object-cover"
+            />
+          ) : thumbnail ? (
+            <img src={thumbnail} alt={title} class="h-full w-full object-cover" />
+          ) : (
+            <div class="flex h-full w-full flex-col items-center justify-center p-8 text-center">
+              {logo && (
+                <img
+                  src={logo}
+                  alt={`${title} logo`}
+                  class="mb-6 max-h-20 w-auto object-contain brightness-0 invert"
+                />
+              )}
+              <p class="text-2xl font-semibold tracking-tight text-[#F5F5F3] sm:text-4xl">
+                {title}
+              </p>
+              <p class="mt-2 max-w-md text-xs tracking-[0.14em] text-neutral-400 uppercase">
+                {subtitle}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <!-- Animated Metric Counters -->
+    {
+      metrics.length > 0 && (
+        <div class="my-14 grid grid-cols-1 gap-px border border-white/10 bg-white/10 sm:grid-cols-3">
+          {metrics.map((m) => (
+            <div class="bg-[#0A0A0B] p-8">
+              <div class="text-4xl font-bold tracking-tight text-[#F5F5F3] sm:text-5xl">
+                {m.prefix && <span>{m.prefix}</span>}
+                <span data-counter-target={m.value}>{m.value}</span>
+                {m.suffix && <span class="text-[var(--ambient-accent)]">{m.suffix}</span>}
+              </div>
+              <p class="mt-3 text-xs tracking-[0.16em] text-neutral-400 uppercase">{m.label}</p>
+            </div>
+          ))}
+        </div>
+      )
+    }
+
+    <!-- Narrative & Services -->
+    <div class="grid grid-cols-1 gap-12 border-t border-white/10 py-14 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <p class="text-[11px] font-semibold tracking-[0.2em] text-neutral-500 uppercase">
+          Scope of Work
+        </p>
+        <ul class="mt-4 space-y-2.5 text-sm text-neutral-300">
+          {services.map((s) => (
+            <li class="border-b border-white/10 pb-2.5">{s}</li>
+          ))}
+        </ul>
+      </div>
+
+      <article class="space-y-6 text-base leading-relaxed text-neutral-300 lg:col-span-8">
+        <Content />
+      </article>
+    </div>
+
+    <!-- Next Project Transition -->
+    <a
+      href={`/work/${nextEntry.data.slug}/`}
+      data-cursor-label="Next Case"
+      class="group mt-10 flex flex-col justify-between gap-6 border border-white/15 bg-white/[0.02] p-8 transition hover:border-white/40 sm:flex-row sm:items-center sm:p-12"
+    >
+      <div>
+        <p class="text-[11px] font-medium tracking-[0.2em] text-neutral-400 uppercase">
+          Next Case Study
+        </p>
+        <h2 class="mt-2 text-3xl font-semibold tracking-tight text-[#F5F5F3] transition-transform duration-300 group-hover:translate-x-2 sm:text-5xl">
+          {nextEntry.data.title}
+        </h2>
+        <p class="mt-2 text-sm text-neutral-400">{nextEntry.data.subtitle}</p>
+      </div>
+      <span class="text-2xl text-neutral-400 transition-transform duration-300 group-hover:translate-x-2 group-hover:text-white">
+        →
+      </span>
+    </a>
+  </main>
+</Layout>

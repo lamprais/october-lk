@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PortfolioIndex from '../components/PortfolioIndex.tsx';
+
+export const prerender = true;
+
+const allWork = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+
+const portfolioItems = allWork.map((entry) => ({
+  title: entry.data.title,
+  slug: entry.data.slug,
+  subtitle: entry.data.subtitle,
+  location: entry.data.location,
+  category: entry.data.category,
+  year: entry.data.year,
+  summary: entry.data.summary,
+  services: entry.data.services,
+  techStack: entry.data.techStack,
+  accentColor: entry.data.accentColor,
+  featured: entry.data.featured,
+  thumbnail: entry.data.thumbnail,
+  reel: entry.data.reel,
+  logo: entry.data.logo,
+}));
+---
+
+<Layout
+  title="Work – October Digital Agency"
+  description="Selected hospitality, dining, and lifestyle case studies engineered by October Digital Agency."
+  canonicalPath="/work/"
+  schema={{
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Selected Work – October Digital Agency',
+    url: 'https://october.lk/work/',
+    description:
+      'Selected hospitality, dining, and lifestyle case studies engineered by October Digital Agency.',
+  }}
+>
+  <main class="mx-auto max-w-7xl px-6 py-20 sm:py-28">
+    <div class="mb-14 max-w-3xl">
+      <p class="text-[11px] font-medium tracking-[0.2em] text-neutral-400 uppercase">
+        Portfolio &amp; Case Studies
+      </p>
+      <h1
+        class="split-reveal mt-4 text-4xl font-bold tracking-tight text-[#F5F5F3] uppercase sm:text-6xl"
+        data-reveal-immediate="true"
+      >
+        Selected Work
+      </h1>
+      <p class="mt-5 text-base leading-relaxed text-neutral-400">
+        Hospitality flagships, culinary destinations, and high-authority digital platforms engineered in Colombo.
+      </p>
+    </div>
+
+    <PortfolioIndex client:load projects={portfolioItems} showAllByDefault={true} />
+  </main>
+</Layout>

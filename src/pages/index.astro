@@ -1,0 +1,187 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import HeroSpotlight from '../components/HeroSpotlight.tsx';
+import PortfolioIndex from '../components/PortfolioIndex.tsx';
+
+export const prerender = true;
+
+const allWork = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const allServices = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+
+const portfolioItems = allWork.map((entry) => ({
+  title: entry.data.title,
+  slug: entry.data.slug,
+  subtitle: entry.data.subtitle,
+  location: entry.data.location,
+  category: entry.data.category,
+  year: entry.data.year,
+  summary: entry.data.summary,
+  services: entry.data.services,
+  techStack: entry.data.techStack,
+  accentColor: entry.data.accentColor,
+  featured: entry.data.featured,
+  thumbnail: entry.data.thumbnail,
+  reel: entry.data.reel,
+  logo: entry.data.logo,
+}));
+---
+
+<Layout canonicalPath="/">
+  <!-- Kinetic Hero -->
+  <section class="relative flex min-h-[88vh] flex-col justify-between overflow-hidden border-b border-white/10">
+    <HeroSpotlight client:idle />
+
+    <div class="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-between px-6 py-12 sm:py-16">
+      <!-- Live Colombo Status Badge -->
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="inline-flex items-center gap-2.5 border border-white/15 bg-[#0A0A0B]/70 px-3.5 py-1.5 backdrop-blur-sm">
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+          </span>
+          <span class="text-[10px] font-medium tracking-[0.18em] text-neutral-300 uppercase">
+            Colombo · <span id="colombo-time">IST</span> · Available for Q1/Q2
+          </span>
+        </div>
+
+        <span class="text-[10px] font-medium tracking-[0.2em] text-neutral-500 uppercase">
+          Digital Design &amp; Technical Services
+        </span>
+      </div>
+
+      <!-- Oversized SplitText Headline -->
+      <div class="my-auto py-12">
+        <h1
+          class="split-reveal max-w-5xl text-5xl font-bold tracking-tight text-[#F5F5F3] uppercase sm:text-7xl lg:text-[6.25rem] lg:leading-[0.95]"
+          data-reveal-immediate="true"
+        >
+          Your Next Step Starts Here.
+        </h1>
+        <p class="reveal-up mt-8 max-w-2xl text-base leading-relaxed text-neutral-400 sm:text-lg">
+          October Digital Agency partners with luxury hospitality, dining, and real estate brands across Sri Lanka—engineering sub-second web platforms, direct booking systems, and technical SEO/GEO growth.
+        </p>
+
+        <div class="reveal-up mt-10 flex flex-wrap items-center gap-4">
+          <a
+            href="#selected-work"
+            data-cursor-label="Explore"
+            class="bg-[#F5F5F3] px-7 py-3.5 text-xs font-semibold tracking-[0.18em] text-[#0A0A0B] uppercase transition hover:bg-white"
+          >
+            Selected Work
+          </a>
+          <button
+            type="button"
+            data-open-inquiry
+            class="border border-white/20 px-7 py-3.5 text-xs font-medium tracking-[0.18em] text-[#F5F5F3] uppercase transition hover:border-white"
+          >
+            Start a Project
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Ticker Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 text-[10px] tracking-[0.2em] text-neutral-500 uppercase">
+        <span>Hospitality · F&amp;B · Real Estate Platforms</span>
+        <span>Astro 7 · Next.js · Cloudbeds · BigQuery · Cloudflare</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Portfolio Showcase -->
+  <section id="selected-work" class="mx-auto max-w-7xl px-6 py-24 sm:py-32">
+    <div class="mb-12 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+      <div>
+        <p class="text-[11px] font-medium tracking-[0.2em] text-neutral-400 uppercase">
+          Selected Work
+        </p>
+        <h2 class="split-reveal mt-3 text-3xl font-semibold tracking-tight text-[#F5F5F3] sm:text-5xl">
+          Flagship Partnerships
+        </h2>
+      </div>
+      <a
+        href="/work/"
+        class="text-xs font-medium tracking-[0.16em] text-neutral-400 uppercase underline underline-offset-8 transition hover:text-white"
+      >
+        View Full Archive ({allWork.length}) →
+      </a>
+    </div>
+
+    <PortfolioIndex client:load projects={portfolioItems} showAllByDefault={false} />
+  </section>
+
+  <!-- Asymmetrical Capabilities Bento Grid -->
+  <section class="border-t border-white/10 bg-white/[0.015]">
+    <div class="mx-auto max-w-7xl px-6 py-24 sm:py-32">
+      <div class="mb-14 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+        <div>
+          <p class="text-[11px] font-medium tracking-[0.2em] text-neutral-400 uppercase">
+            Capabilities
+          </p>
+          <h2 class="split-reveal mt-3 text-3xl font-semibold tracking-tight text-[#F5F5F3] sm:text-5xl">
+            Design Meets Infrastructure
+          </h2>
+        </div>
+        <a
+          href="/services/"
+          class="text-xs font-medium tracking-[0.16em] text-neutral-400 uppercase underline underline-offset-8 transition hover:text-white"
+        >
+          Explore All Services →
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 gap-px bg-white/10 lg:grid-cols-12">
+        {
+          allServices.map((service, index) => {
+            const spanClass =
+              index === 0 || index === 3 ? 'lg:col-span-7' : 'lg:col-span-5';
+            return (
+              <div class={`bg-[#0A0A0B] p-8 sm:p-10 ${spanClass}`}>
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-semibold tracking-[0.2em] text-[var(--ambient-accent)]">
+                    {service.data.code}
+                  </span>
+                  <span class="text-[10px] tracking-[0.18em] text-neutral-500 uppercase">
+                    {service.data.tagline}
+                  </span>
+                </div>
+                <h3 class="mt-6 text-2xl font-semibold tracking-tight text-[#F5F5F3]">
+                  {service.data.title}
+                </h3>
+                <p class="mt-3 text-sm leading-relaxed text-neutral-400">
+                  {service.data.summary}
+                </p>
+                <div class="mt-8 flex flex-wrap gap-2">
+                  {service.data.stack.map((tech) => (
+                    <span class="border border-white/10 px-2.5 py-1 text-[10px] tracking-[0.12em] text-neutral-300 uppercase">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  function updateColomboClock() {
+    const el = document.getElementById('colombo-time');
+    if (!el) return;
+    try {
+      el.textContent = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Colombo',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).format(new Date());
+    } catch {
+      el.textContent = 'LK';
+    }
+  }
+
+  document.addEventListener('astro:page-load', updateColomboClock);
+</script>
