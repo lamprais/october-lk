@@ -12,8 +12,8 @@ const useCloudflareAdapter = Boolean(
 // https://astro.build/config
 export default defineConfig({
   site: 'https://october.lk',
-  output: 'server',
-  adapter: useCloudflareAdapter ? cloudflare() : node({ mode: 'standalone' }),
+  output: 'static',
+  adapter: useCloudflareAdapter ? cloudflare() : undefined,
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
