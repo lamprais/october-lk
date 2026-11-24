@@ -5,16 +5,17 @@ const isWork = pathname.startsWith('/work');
 ---
 
 <header class="sticky top-0 z-50 border-b border-white/10 bg-[#0A0A0B]/85 backdrop-blur-md">
-  <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-    <a href="/" class="flex items-center gap-3" aria-label="October Digital Agency Home">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-6">
+    <a href="/" class="flex shrink-0 items-center" aria-label="October Digital Agency Home">
       <img
         src="/images/October_Logo_Light_04.04.20.svg"
         alt="October Digital Agency"
-        class="h-6 w-auto"
+        class="h-5 w-auto sm:h-6"
       />
     </a>
 
-    <nav aria-label="Primary" class="flex items-center gap-6 sm:gap-8">
+    <!-- Desktop Navigation -->
+    <nav aria-label="Primary" class="hidden items-center gap-8 sm:flex">
       <a
         href="/services/"
         class={`text-[11px] font-medium tracking-[0.18em] uppercase transition ${
@@ -49,5 +50,87 @@ const isWork = pathname.startsWith('/work');
         +94 77 889 2555
       </a>
     </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button
+      type="button"
+      id="mobile-menu-toggle"
+      aria-expanded="false"
+      aria-controls="mobile-nav-panel"
+      class="flex items-center gap-2 border border-white/20 px-3.5 py-1.5 text-[10px] font-semibold tracking-[0.2em] text-[#F5F5F3] uppercase sm:hidden"
+    >
+      <span id="mobile-menu-label">Menu</span>
+    </button>
+  </div>
+
+  <!-- Mobile Dropdown Panel -->
+  <div
+    id="mobile-nav-panel"
+    class="hidden border-t border-white/10 bg-[#0A0A0B] px-5 py-6 sm:hidden"
+  >
+    <nav aria-label="Mobile Primary" class="flex flex-col space-y-5">
+      <a
+        href="/services/"
+        class={`text-sm font-medium tracking-[0.18em] uppercase ${
+          isServices ? 'text-white' : 'text-neutral-300'
+        }`}
+      >
+        Services
+      </a>
+      <a
+        href="/work/"
+        class={`text-sm font-medium tracking-[0.18em] uppercase ${
+          isWork ? 'text-white' : 'text-neutral-300'
+        }`}
+      >
+        Work
+      </a>
+      <button
+        type="button"
+        data-open-inquiry
+        class="w-full border border-white/25 py-3 text-center text-xs font-semibold tracking-[0.18em] text-[#F5F5F3] uppercase"
+      >
+        Contact
+      </button>
+      <div class="flex flex-col gap-2 border-t border-white/10 pt-4 text-xs text-neutral-400">
+        <a href="mailto:info@october.lk">info@october.lk</a>
+        <a href="tel:+94778892555">+94 77 889 2555</a>
+      </div>
+    </nav>
   </div>
 </header>
+
+<script>
+  function bindMobileMenu() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const panel = document.getElementById('mobile-nav-panel');
+    const label = document.getElementById('mobile-menu-label');
+    if (!toggle || !panel || !label) return;
+
+    if (toggle.getAttribute('data-bound') === 'true') return;
+    toggle.setAttribute('data-bound', 'true');
+
+    const closeMenu = () => {
+      panel.classList.add('hidden');
+      toggle.setAttribute('aria-expanded', 'false');
+      label.textContent = 'Menu';
+    };
+
+    toggle.addEventListener('click', () => {
+      const isOpen = !panel.classList.contains('hidden');
+      if (isOpen) {
+        closeMenu();
+      } else {
+        panel.classList.remove('hidden');
+        toggle.setAttribute('aria-expanded', 'true');
+        label.textContent = 'Close';
+      }
+    });
+
+    panel.querySelectorAll('a, button').forEach((el) => {
+      el.addEventListener('click', closeMenu);
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindMobileMenu);
+</script>
